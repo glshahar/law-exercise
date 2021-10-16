@@ -36,7 +36,7 @@ function App() {
   const searchMoviesByInputValue = async (searchInput, searchPage) => {
     console.log(`inputValue => ${searchInput}\nsearchPage => ${searchPage}\nsearchYear => ${searchYear}\nurl => http://www.omdbapi.com/?apikey=a61b9e49&s=${inputValue}&page=${searchPage}&y=${searchYear}`);
     setLoadingPage(true);
-    let url = `http://www.omdbapi.com/?apikey=a61b9e49&s=${searchInput}&page=${searchPage}&y=${searchYear}`;
+    let url = `https://www.omdbapi.com/?apikey=a61b9e49&s=${searchInput}&page=${searchPage}&y=${searchYear}`;
     await fetch(url)
     .then(response => response.json())
     .then(results => {
@@ -68,7 +68,7 @@ function App() {
   };
 
   const getMovieDataById = async (movieId) => {
-    let url = `http://www.omdbapi.com/?apikey=a61b9e49&i=${movieId}&plot=full`;
+    let url = `https://www.omdbapi.com/?apikey=a61b9e49&i=${movieId}&plot=full`;
     await fetch(url)
     .then(response => response.json())
     .then(result => {
