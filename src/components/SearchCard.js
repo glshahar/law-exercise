@@ -21,7 +21,6 @@ const SearchCard = (props) => {
         const startYear = 1900;
         const currentYear = new Date().getFullYear();
         const initYearsList = [{value: null, text: 'All'}]
-        console.log(`currentYear => ${currentYear}`)
         for (let i=currentYear; i>=startYear; i--) {
             initYearsList.push({value: i, text: i})
         }
@@ -38,8 +37,6 @@ const SearchCard = (props) => {
                 onKeyPress={onKeyPress}
                 fullWidth={true}
                 className='searchInput'
-                // helperText={searchDisclaimer}
-                // InputProps={{disableUnderline: true}}
                 InputProps={{
                     type: 'search',
                     endAdornment: (
@@ -79,10 +76,11 @@ const SearchCardStyle = styled.div`
     min-height: 40px;
     margin: 30px auto;
     padding: 10px 3% 18px 3%;
-    border-radius: 25px;
+    border-radius: 15px;
     box-shadow: 0 2px 10px 0 #d7d3ff;
     @media only screen and (max-width: 1024px) {
         margin: 30px auto 0;
+        border-radius: 0;
     }
 
     .searchInput {
@@ -99,6 +97,7 @@ const SearchCardStyle = styled.div`
     .selectInput {
         width: 30%;
         padding-right: 20px;
+        text-align: left;
     }
 
     .searchButton {

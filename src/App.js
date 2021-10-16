@@ -16,12 +16,12 @@ function App() {
   const [searchDisclaimer, setSearchDisclaimer] = useState('');
   const [currentMovieData, setCurrentMovieData] = useState({});
   const [moviePopup, setMoviePopup] = useState(false);
-  let timeout = null;
+  const [resultEnded, setResultEnded] = useState(false);
 
   useEffect(() => {
     // detect scroll to end of page
     window.onscroll = () => {
-      if (!loadingPage && inputValue) {
+      if (!resultEnded && !loadingPage && inputValue) {
         const scrollableDivHeight = document.getElementById('scrollableDiv').clientHeight;
         if (!loadingPage && document.documentElement.scrollTop > (scrollableDivHeight - window.innerHeight - 500)) {
           console.log(`need to load page no => ${searchPage + 1}`);
@@ -31,16 +31,26 @@ function App() {
         }
       }
     }
-  }, [loadingPage, searchPage, inputValue])
+  }, [loadingPage, searchPage, inputValue, resultEnded])
+
+  useEffect(() => {
+    // detect inputValu change
+    if (inputValue) {
+      const timeout = setTimeout(() => {
+        searchMoviesByInputValue(inputValue.trim(), 1);
+      }, 800);
+      return () => clearTimeout(timeout);
+    }
+  }, [inputValue])
 
   const searchMoviesByInputValue = async (searchInput, searchPage) => {
-    console.log(`inputValue => ${searchInput}\nsearchPage => ${searchPage}\nsearchYear => ${searchYear}\nurl => http://www.omdbapi.com/?apikey=a61b9e49&s=${inputValue}&page=${searchPage}&y=${searchYear}`);
     setLoadingPage(true);
-    let url = `https://www.omdbapi.com/?apikey=a61b9e49&s=${searchInput}&page=${searchPage}&y=${searchYear}`;
+    let url = `https://www.omdbapi.com/?apikey=a61b9e49&s=${searchInput.trim()}&page=${searchPage}&y=${searchYear}`;
     await fetch(url)
     .then(response => response.json())
     .then(results => {
       if (results.Response && results.Search) {
+        if (resultEnded) setResultEnded(false);
         if (searchPage === 1) {
           setMoviesList(results.Search);
           setSearchPage(1);
@@ -49,22 +59,21 @@ function App() {
         setSearchDisclaimer(`Displaying ${results.totalResults || ''} total results for "${searchInput}"`);
         setLoadingPage(false);
       }
-      else if (results.Error && searchPage === 1) {
-        setSearchDisclaimer(results.Error);
-        setMoviesList([]);
+      else if (results.Error) {
         setLoadingPage(false);
+        setResultEnded(true);
+        if (searchPage === 1) {
+          setSearchDisclaimer(results.Error);
+          setMoviesList([]);
+        }
       }
     })
     .catch(() => alert('error'))
   }
 
   const handleInputChange = (searchInput) => {
-    console.log(`handleInputChange => searchInput: ${searchInput}`)
     setInputValue(searchInput);
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      searchMoviesByInputValue(searchInput.trim(), 1);
-    }, 500);
+    if (resultEnded) setResultEnded(true);
   };
 
   const getMovieDataById = async (movieId) => {
@@ -98,14 +107,14 @@ function App() {
                     onInputChange={(e) => handleInputChange(e.target.value)}
                     onKeyPress={(e) => {if (e.key === 'Enter') searchMoviesByInputValue(inputValue, 1)}}
                     yearInputValue={searchYear}
-                    onYearChange={(e) => { setSearchYear(e.target.value); alert(`Change Year => ${e.target.value}`); }}
+                    onYearChange={(e) => setSearchYear(e.target.value)}
                     onButtonClick={() => searchMoviesByInputValue(inputValue, 1)}
         />
         {searchDisclaimer && <p className='search-disclaimer'>{searchDisclaimer}</p>}
         {moviesList.map(movie =>
-          <MovieCard movieData={movie} onMovieClick={() => getMovieDataById(movie.imdbID)} />
+          <MovieCard key={movie.imdbID} movieData={movie} onMovieClick={() => getMovieDataById(movie.imdbID)} />
         )}
-        {loadingPage && <CircularProgress style={{margin: '0 auto'}} />}
+        {loadingPage && <CircularProgress style={{margin: '20px auto'}} />}
       </div>
 
       {moviePopup &&

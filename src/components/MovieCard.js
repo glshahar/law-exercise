@@ -36,8 +36,10 @@ const MovieCardStyle = styled.div`
     margin: 15px auto;
     box-shadow: 0 2px 10px 0 #d7d3ff;
     cursor: pointer;
+    border-radius: 15px;
     @media only screen and (max-width: 1024px) {
         margin: 5px auto;
+        border-radius: 0;
     }
 
     .moviePoster {
@@ -71,6 +73,7 @@ const MovieCardStyle = styled.div`
         padding-left: 15px;
         text-align: left;
         color: black;
+        h3 { margin-top: 0px; }
         @media only screen and (max-width: 1024px) {
             h3 {
                 margin: 0px;

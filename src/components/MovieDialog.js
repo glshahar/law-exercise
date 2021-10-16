@@ -1,19 +1,12 @@
 import React from 'react'
-import { Dialog, Chip } from '@material-ui/core'
+import { Dialog, Chip, useMediaQuery } from '@material-ui/core'
 import styled from 'styled-components'
 import imdbLogo from '../logo-imdb.png'
 
 const MovieDialog = (props) => {
 
     const { openPopup, closePopup, movieData } = props;
-
-    const dialogStyle = {
-        width: '70%',
-        margin: 'auto',
-        '@media (max-width: 1024px)' : {
-            width: '100%',
-        }
-    }
+    const isMobile = useMediaQuery('(max-width: 1024px)');
 
     return <>
         <Dialog
@@ -21,14 +14,20 @@ const MovieDialog = (props) => {
             onClose={closePopup}
             maxWidth={'100px'}
             className='DialogStyle'
-            style={{width: '70%', margin: 'auto'}}
+            style={{width: isMobile ? '100%' : '70%', margin: 'auto'}}
             role={'dialog'}
         >
             <WrapperStyle>
                 <button className='closeBtn' onClick={closePopup}>&#10005;</button>
                 
                 <div className='moviePoster'>
-                    <img alt='poster' src={movieData.Poster} />
+                    {movieData.Poster !== 'N/A' ? 
+                        <img alt='poster' src={movieData.Poster} />
+                        :
+                        <div className='defaultImg'>
+                            <p>Poster is Not Available</p>
+                        </div>  
+                    }
                 </div>
 
                 <div className='movieContent'>
@@ -41,7 +40,7 @@ const MovieDialog = (props) => {
                     <div className='lineContent'>
                         <div className='chipsWrapper'>
                             {movieData.Genre && movieData.Genre.split(',').map((genre, index) => (
-                                <Chip key={index} label={genre} size={'medium'} variant={'outline'} className='chipStyle' />
+                                <Chip key={index} label={genre} size={isMobile ? 'small' : 'medium'} variant={'outline'} className='chipStyle' />
                             ))}
                         </div>
                         <div className='ratingWrapper'>
@@ -70,6 +69,18 @@ const WrapperStyle = styled.div`
     padding: 6% 10%;
     display: flex;
     flex-direction: row;
+    @media only screen and (max-width: 1024px) {
+        width: 90%;
+        padding: 12% 5%;
+        h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        h5 {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+    }
 
     .closeBtn {
         font-size: 20px;
@@ -79,6 +90,10 @@ const WrapperStyle = styled.div`
         cursor: pointer;
         left: 30px;
         top: 30px;
+        @media only screen and (max-width: 600px) {
+            top: 5px;
+            left: 5px;
+        }
     }
 
     .moviePoster {
@@ -87,6 +102,26 @@ const WrapperStyle = styled.div`
             max-width: 100%;
             max-height: 100%;
             height: auto;
+        }
+        .defaultImg {
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            background-color: #efefef;
+            p {
+                width: 80%;
+                text-align center;
+                margin: auto;
+                color: gray;
+                line-height: 25px;
+            } 
+            @media only screen and (max-width: 1024px) {
+                min-height: 140px;
+            }
+        }
+        @media only screen and (max-width: 1024px) {
+            width: 35%;
         }
     }
 
@@ -99,21 +134,48 @@ const WrapperStyle = styled.div`
         h5 > span {
             margin-right: 5px;
         }
+        @media only screen and (max-width: 600px) {
+            // background-color: red;
+            width: 65%;
+            padding-left: 10px;
+            h5 > span:nth-child(3) {
+                display: block;
+                margin-top: 10px;
+                margin-right: 0;
+            }
+            p {
+                width: 158%;
+                margin-left: -58%;
+                font-size: 15px;
+            }
+        }
         .lineContent {
             display: flex;
             flex-direction: row;
+            @media only screen and (max-width: 1024px) {
+                flex-direction: column;
+                margin-top: 10px;
+            }
         }
         .chipsWrapper {
             width: 65%;
             .chipStyle {
                 margin-right: 10px;
                 margin-left: -2px;
+                margin-bottom: 5px;
+            }
+            @media only screen and (max-width: 1024px) {
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
         .ratingWrapper {
             width: 30%;
             display: flex;
             flex-direction: row;
+            @media only screen and (max-width: 1024px) {
+                width: 88%;
+            }
             div {
                 width: 50%;
                 display: flex;
